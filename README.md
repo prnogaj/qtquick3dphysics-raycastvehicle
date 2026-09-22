@@ -1,7 +1,7 @@
-# RayCast3D vehicle
+# Raycaster vehicle
 
 A raycast vehicle for Qt Quick 3D Physics, written entirely in QML. Each wheel
-is a `RayCast3D` pointing down from the chassis. The distance to the ground
+is a `Raycaster` pointing down from the chassis. The distance to the ground
 drives a spring-damper suspension. Tire friction and engine force are applied at
 the same point.
 
@@ -9,15 +9,44 @@ the same point.
 
 ## Requirements
 
-Qt 6.13 with Qt Quick 3D and a patched Qt Quick 3D Physics.
+Qt 6.13 from the dev branch with Qt Quick 3D, and Qt Quick 3D Physics with two
+changes that are still under review:
 
-The example uses `RayCast3D` and the `DynamicRigidBody.linearVelocity` and
-`angularVelocity` properties. These are not in any Qt release yet. They are
-under review in
-[qt/qtquick3dphysics change 771502](https://codereview.qt-project.org/c/qt/qtquick3dphysics/+/771502).
-Build Qt Quick 3D Physics from that change and install it into your Qt prefix.
-The change's parent changes, listed in its relation chain, are included
-automatically when you check it out.
+| Change | Adds |
+|--------|------|
+| [771501](https://codereview.qt-project.org/c/qt/qtquick3dphysics/+/771501) Expose DynamicRigidBody velocity properties | `DynamicRigidBody.linearVelocity` and `angularVelocity` |
+| [771502](https://codereview.qt-project.org/c/qt/qtquick3dphysics/+/771502) Add Raycaster scene query type | `Raycaster` |
+
+The example needs both. They are separate changes, not one chain: 771501 is
+based on dev, and 771502 is based on the scene queries change
+[765878](https://codereview.qt-project.org/c/qt/qtquick3dphysics/+/765878).
+Checking out one does not bring in the other, so check out 771502 and
+cherry-pick 771501 on top of it:
+
+```bash
+git clone https://code.qt.io/qt/qtquick3dphysics.git
+cd qtquick3dphysics
+git fetch https://codereview.qt-project.org/qt/qtquick3dphysics refs/changes/02/771502/4
+git checkout -b raycastvehicle FETCH_HEAD
+git fetch https://codereview.qt-project.org/qt/qtquick3dphysics refs/changes/01/771501/4
+git cherry-pick FETCH_HEAD
+```
+
+The number at the end of each ref is the patch set, which goes up as the
+changes are revised. The Download menu on each change page shows the ref of
+the latest one.
+
+Then build Qt Quick 3D Physics and install it into your Qt prefix:
+
+```bash
+mkdir build && cd build
+/path/to/Qt/6.13/gcc_64/bin/qt-configure-module ..
+cmake --build . --parallel
+cmake --install .
+```
+
+Qt Quick 3D Physics from dev uses internal Qt Quick 3D API that changed after
+6.12, so the Qt Quick 3D in that prefix has to come from dev as well.
 
 ## Build and run
 
@@ -49,7 +78,7 @@ Every wheel owns a ray cast in its local space. The ray ignores the chassis it
 belongs to:
 
 ```qml
-RayCast3D {
+Raycaster {
     id: ray
     direction: Qt.vector3d(0, -1, 0)
     maxDistance: root.restLength + root.radius + 20
@@ -57,7 +86,7 @@ RayCast3D {
 }
 ```
 
-`RayCast3D` updates its `hit` before `PhysicsWorld.frameDone` is emitted, so
+`Raycaster` updates its `hit` before `PhysicsWorld.frameDone` is emitted, so
 the vehicle computes its forces from that signal. For each wheel that touches
 the ground, `Wheel.applyForces()` takes the velocity of the chassis at the wheel
 and splits it along the wheel's up, side and forward axes:

@@ -12,7 +12,7 @@ qt_add_executable(raycastvehicle
 )
 
 qt_add_qml_module(raycastvehicle
-    URI RayCastVehicleExample
+    URI RaycastVehicleExample
     QML_FILES
         Hud.qml
         Main.qml

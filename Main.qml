@@ -11,7 +11,7 @@ Window {
     width: 1280
     height: 720
     visible: true
-    title: qsTr("RayCast3D vehicle")
+    title: qsTr("Raycaster vehicle")
 
     property bool respawnPressed: false
 

@@ -21,7 +21,7 @@ Node {
     property real distanceTravelled: 0
     property alias color: material.baseColor
 
-    RayCast3D {
+    Raycaster {
         id: ray
         direction: Qt.vector3d(0, -1, 0)
         maxDistance: root.restLength + root.radius + 20
