@@ -9,34 +9,21 @@ the same point.
 
 ## Requirements
 
-Qt 6.13 from the dev branch with Qt Quick 3D, and Qt Quick 3D Physics with two
-changes that are still under review:
+Use Qt from the dev branch until 6.13 is branched, then use the 6.13 branch.
+The build needs Qt Quick 3D and Qt Quick 3D Physics from the same branch. The
+required `DynamicRigidBody` velocity properties and `Raycaster` are included in
+Qt Quick 3D Physics dev.
 
-| Change | Adds |
-|--------|------|
-| [771501](https://codereview.qt-project.org/c/qt/qtquick3dphysics/+/771501) Expose DynamicRigidBody velocity properties | `DynamicRigidBody.linearVelocity` and `angularVelocity` |
-| [771502](https://codereview.qt-project.org/c/qt/qtquick3dphysics/+/771502) Add Raycaster scene query type | `Raycaster` |
-
-The example needs both. They are separate changes, not one chain: 771501 is
-based on dev, and 771502 is based on the scene queries change
-[765878](https://codereview.qt-project.org/c/qt/qtquick3dphysics/+/765878).
-Checking out one does not bring in the other, so check out 771502 and
-cherry-pick 771501 on top of it:
+If Qt Quick 3D Physics is not already installed in your Qt prefix, clone its
+source and check out the branch matching the rest of your Qt build:
 
 ```bash
 git clone https://code.qt.io/qt/qtquick3dphysics.git
 cd qtquick3dphysics
-git fetch https://codereview.qt-project.org/qt/qtquick3dphysics refs/changes/02/771502/4
-git checkout -b raycastvehicle FETCH_HEAD
-git fetch https://codereview.qt-project.org/qt/qtquick3dphysics refs/changes/01/771501/4
-git cherry-pick FETCH_HEAD
+git switch dev  # or 6.13 once that branch exists
 ```
 
-The number at the end of each ref is the patch set, which goes up as the
-changes are revised. The Download menu on each change page shows the ref of
-the latest one.
-
-Then build Qt Quick 3D Physics and install it into your Qt prefix:
+Build Qt Quick 3D Physics and install it into your Qt prefix:
 
 ```bash
 mkdir build && cd build
@@ -45,8 +32,8 @@ cmake --build . --parallel
 cmake --install .
 ```
 
-Qt Quick 3D Physics from dev uses internal Qt Quick 3D API that changed after
-6.12, so the Qt Quick 3D in that prefix has to come from dev as well.
+Qt Quick 3D Physics uses internal Qt Quick 3D API that changed after 6.12, so
+the Qt Quick 3D in that prefix must come from the same branch.
 
 ## Build and run
 
